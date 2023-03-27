@@ -1,0 +1,38 @@
+---
+- name: Check sshd config file exists
+  stat:
+    path: "{{ sshd_config_file }}"
+  failed_when: sshd_config_file_check.stat.exists == False
+  register: sshd_config_file_check
+
+- when: sshd_config_file_check.stat.exists
+  block:
+    - name: Set PasswordAuthentication
+      lineinfile:
+        path: "{{ sshd_config_file }}"
+        regexp: '^(#\s*)?PasswordAuthentication '
+        line: >-
+          PasswordAuthentication
+          {% if sshd_config_password_authentication %}yes{% else %}no{% endif %}
+      when: sshd_config_password_authentication != None
+      notify: restart sshd
+
+    - name: Set PermitEmptyPasswords
+      lineinfile:
+        path: "{{ sshd_config_file }}"
+        regexp: '^(#\s*)?PermitEmptyPasswords '
+        line: >-
+          PermitEmptyPasswords
+          {% if sshd_config_permit_empty_passwords %}yes{% else %}no{% endif %}
+      when: sshd_config_permit_empty_passwords != None
+      notify: restart sshd
+
+    - name: Set PermitRootLogin
+      lineinfile:
+        path: "{{ sshd_config_file }}"
+        regexp: '^(#\s*)?PermitRootLogin '
+        line: >-
+          PermitRootLogin
+          {% if sshd_config_permit_root_login %}yes{% else %}no{% endif %}
+      when: sshd_config_permit_root_login != None
+      notify: restart sshd

@@ -1,0 +1,9 @@
+---
+- name: "Copying the {{ group_names[0] }} config file to {{ ansible_host }}"
+  copy:
+    src: "roles/guvnor/files/{{ group_names[0] }}.yaml"
+    dest: "/opt/{{ group_names[0] }}/guvnor/{{ group_names[0] }}.yaml"
+
+- name: 'Deploying {{ group_names[0] }} to {{ ansible_host }}'
+  become: true
+  command: '{{ group_names[0] }} deploy'

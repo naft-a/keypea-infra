@@ -1,0 +1,24 @@
+---
+- hosts: all
+  roles:
+    - role: packages
+      tags: ["system", "packages"]
+    - role: sshd_config
+      tags: ["system", "ssh"]
+    - role: docker
+      tags: ["system", "docker"]
+    - role: guvnor
+      tags: ["system", "guvnor"]
+
+- hosts:
+    - gateway
+  roles:
+    - role: redis
+      tags: ["system", "redis"]
+
+- hosts:
+    - secrets_service
+    - auth_service
+  roles:
+    - role: mongodb
+      tags: ["system", "mongodb"]

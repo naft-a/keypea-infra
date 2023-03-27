@@ -1,0 +1,76 @@
+- name: Create an application user with a static UID and GID
+  become: yes
+  user:
+    name: "{{ group_names[0] }}"
+    shell: /bin/bash
+    uid: 900
+    state: present
+    system: yes
+
+- name: Add group for Guvnor
+  become: yes
+  group:
+    name: guvnor
+    state: present
+    system: yes
+
+- name: Add the new user to groups "docker" and "guvnor"
+  become: yes
+  user:
+    name: "{{ group_names[0] }}"
+    groups: docker,guvnor
+    append: yes
+
+- name: Download guvnor
+  become: yes
+  get_url:
+    url: https://guvnor.k.io/install.sh
+    dest: /tmp/install.sh
+
+- name: Install guvnor
+  become: yes
+  shell:
+    cmd: bash install.sh
+    chdir: /tmp/
+
+- name: Initialize guvnor
+  become: yes
+  command: guvnor init
+  ignore_errors: yes
+
+- name: Set ownership of /etc/guvnor and /var/lib/guvnor
+  become: yes
+  file:
+    path:
+      - /etc/guvnor
+      - /var/lib/guvnor
+    owner: "{{ group_names[0] }}"
+    group: guvnor
+    recurse: yes
+
+- name: Change permissions for /var/lib/guvnor
+  become: yes
+  file:
+    path: /var/lib/guvnor
+    owner: "{{ group_names[0] }}"
+    group: guvnor
+    mode: g+w
+    state: directory
+    recurse: yes
+
+- name: Create working directory for the application
+  become: yes
+  file:
+    path: "/opt/{{ group_names[0] }}/guvnor"
+    owner: "{{ group_names[0] }}"
+    group: "{{ group_names[0] }}"
+    state: directory
+
+- name: "Create a simple wrapper for executing Guvnor in `/usr/bin/{{ group_names[0] }}`"
+  become: yes
+  copy:
+    dest: "/usr/bin/{{ group_names[0] }}"
+    mode: u+x
+    content: |
+      #!/bin/bash
+      sudo -u {{ group_names[0] }} guvnor --service-root /opt/{{ group_names[0] }}/guvnor "$@"

@@ -1,0 +1,29 @@
+---
+- name: Update package list
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: Upgrade packages (apt-get dist-upgrade)
+  become: yes
+  apt:
+    upgrade: dist
+  when: packages_apt_dist_upgrade
+
+- name: Upgrade packages (apt-get upgrade)
+  become: yes
+  apt:
+    upgrade: safe
+  when: packages_apt_upgrade
+
+- name: Install common packages
+  become: yes
+  apt:
+    name:
+      - vim
+      - sudo
+      - net-tools
+      - nethogs
+      - jq
+    state: present
+  ignore_errors: yes

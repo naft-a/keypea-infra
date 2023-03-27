@@ -1,0 +1,42 @@
+---
+- name: Install required system packages
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+    state: latest
+    update_cache: true
+
+- name: Add Docker GPG apt key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    pkg:
+      - docker-ce
+    state: latest
+    update_cache: true
+
+- name: Copy daemon.json
+  copy:
+    src: "{{ role_path }}/files/daemon.json"
+    dest: /etc/docker/daemon.json
+
+- name: Restart Docker
+  become: yes
+  service:
+    name: docker
+    daemon_reload: yes
+    state: restarted

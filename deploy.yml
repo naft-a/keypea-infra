@@ -1,0 +1,5 @@
+---
+- hosts: all
+  tasks:
+    - name: "Starting a new deployment of {{ group_names[0] }} to {{ ansible_host }}"
+      import_tasks: roles/guvnor/tasks/deploy.yml

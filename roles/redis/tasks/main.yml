@@ -1,0 +1,5 @@
+---
+- name: Start Redis container
+  become: yes
+  command: docker run --rm --name container-redis -d redis
+  ignore_errors: yes
