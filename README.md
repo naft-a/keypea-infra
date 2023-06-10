@@ -15,11 +15,11 @@ Infrastructure management for Keypea.
    ```
 2. Check SSH connectivity to all machines:
    ```
-   make ping INVENTORY=production ANSIBLE_USER=<your-myops-username>
+   make ping INVENTORY=production ANSIBLE_USER=<your-username>
    ```
 3. Provision/deploy against all machines:
    ```
-   make provision INVENTORY=production ANSIBLE_USER=<your-myops-username>
+   make provision INVENTORY=production ANSIBLE_USER=<your-username>
    ```
 
 ## Make Targets
