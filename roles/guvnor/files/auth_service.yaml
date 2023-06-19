@@ -1,1 +1,35 @@
-a
+defaults:
+  image: ghcr.io/naft-a/keypea/auth-service
+  imageTag: latest
+  network:
+    mode: host
+  env:
+    RACK_ENV: "production"
+    API_TOKEN: "pPHkVCg3o9vuqN8Ty6eTEjyEk"
+    MONGODB_HOST: "127.0.0.1"
+    MONGODB_USER: "mongoadmin"
+    MONGODB_PASSWORD: "secret"
+
+processes:
+  web:
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+    caddy:
+      hostnames:
+        - authservice.keypea.app
+    readyCheck:
+      frequency: 2s
+      maximum: 60
+      http:
+        expectedStatus: 200
+        path: /
+        headers:
+          - name: Host
+            value: authservice.keypea.app
+
+tasks:
+  create_indexes:
+    command: ["rake", "db:mongoid:create_indexes"]
+
+  console:
+    command: ["bundle", "exec", "rack-console"]
+    interactive: true

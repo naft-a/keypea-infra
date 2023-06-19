@@ -3,3 +3,17 @@
   become: yes
   command: docker run --rm --name container-redis -d redis
   ignore_errors: yes
+
+# TODO:
+# change command with
+#
+#  docker run -p 127.0.0.1:6379:6379 \
+#  -d \
+#  --name redis \
+#  -v /opt/redis/data:/data \
+#  -v /opt/redis/config:/usr/local/etc/redis \
+#  --network host \
+#  redis:latest \
+#  --requirepass <<password>> \
+#  --save 60 1 \
+#  --loglevel warning

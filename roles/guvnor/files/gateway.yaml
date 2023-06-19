@@ -1,1 +1,37 @@
-b
+defaults:
+  image: ghcr.io/naft-a/keypea/gateway
+  imageTag: latest
+  network:
+    mode: host
+  env:
+    HANAMI_ENV: "production"
+    HMAC_SECRET: "01t9z4gAc3uwHz1p28B551dtnjw0nezC9ZeNwgMKBmx8G4XTYt"
+    CORS_ORIGIN: "https://keypea.app"
+    AUTH_API_HOST: "authservice.keypea.app"
+    AUTH_API_PORT: 443
+    AUTH_API_SECRET: "pPHkVCg3o9vuqN8Ty6eTEjyEk"
+    SECRETS_API_HOST: "secretsservice.keypea.app"
+    SECRETS_API_PORT: 443
+    SECRETS_API_SECRET: "31AExh4Ai0tEXnfeL6mGAa7Gt"
+    REDIS_URL: "redis://:X5i9Y3814xPN17s306@127.0.0.1:6379/0"
+
+processes:
+  web:
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+    caddy:
+      hostnames:
+        - gateway.keypea.app
+    readyCheck:
+      frequency: 2s
+      maximum: 60
+      http:
+        expectedStatus: 200
+        path: /
+        headers:
+          - name: Host
+            value: gateway.keypea.app
+
+tasks:
+  console:
+    command: ["bundle", "exec", "hanami", "console"]
+    interactive: true
